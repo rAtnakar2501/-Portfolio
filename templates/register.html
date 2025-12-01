@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="button close"></div>
+                <div class="button minimize"></div>
+                <div class="button maximize"></div>
+            </div>
+            <div class="terminal-title">kali@portfolio:~/register</div>
+        </div>
+        <div class="terminal-body">
+            <div class="welcome-message">
+                <h3>Create New User Account</h3>
+            </div>
+            
+            <form method="POST" class="login-form">
+                <div class="input-group">
+                    <span class="prompt">username:~$ </span>
+                    <input type="text" name="username" placeholder="choose username" required autofocus>
+                </div>
+                <div class="input-group">
+                    <span class="prompt">email:~$ </span>
+                    <input type="email" name="email" placeholder="your@email.com" required>
+                </div>
+                <div class="input-group">
+                    <span class="prompt">password:~$ </span>
+                    <input type="password" name="password" placeholder="create password" required>
+                </div>
+                <button type="submit" class="terminal-button">register</button>
+            </form>
+            
+            <div class="register-prompt">
+                <p>Already have an account? <a href="{{ url_for('login') }}" class="terminal-link">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

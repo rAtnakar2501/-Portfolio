@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Top Menu Bar -->
+    <div class="menu-bar">
+        <div class="menu-left">
+            <div class="menu-item">Applications</div>
+            <div class="menu-item">Places</div>
+            <div class="menu-item">System</div>
+        </div>
+        <div class="menu-center">
+            <span class="username">kali@{{ username }}:~</span>
+        </div>
+        <div class="menu-right">
+            <div class="menu-item" id="timeDisplay"></div>
+            <div class="menu-item"><a href="{{ url_for('logout') }}" class="logout-link">Logout</a></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3>Navigation</h3>
+                <button class="sidebar-btn active" data-tab="projects">Projects</button>
+                <button class="sidebar-btn" data-tab="snake-game">Snake Game</button>
+                <button class="sidebar-btn" data-tab="about">About Me</button>
+                <button class="sidebar-btn" data-tab="skills">Skills</button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Actions</h3>
+                <a href="{{ url_for('download_resume') }}" class="sidebar-btn download-btn">
+                    Download Resume
+                </a>
+                <button class="sidebar-btn" id="seeMoreProjects">See More Projects</button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>System Info</h3>
+                <div class="system-info">
+                    <div class="info-item">
+                        <span class="info-label">User:</span>
+                        <span class="info-value">{{ username }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Status:</span>
+                        <span class="info-value online">Online</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Projects Tab -->
+            <div class="tab-content active" id="projects-tab">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <div class="button close"></div>
+                            <div class="button minimize"></div>
+                            <div class="button maximize"></div>
+                        </div>
+                        <div class="terminal-title">kali@portfolio:~/projects</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="command-output">
+                            <span class="prompt">kali@portfolio:~$ </span>
+                            <span class="command">ls projects/</span>
+                            <div class="output">
+                                {% for project in projects %}
+                                <div class="project-item">
+                                    <div class="project-header">
+                                        <span class="project-name">{{ project.name }}</span>
+                                        <span class="project-status {{ project.status|lower|replace(' ', '-') }}">{{ project.status }}</span>
+                                    </div>
+                                    <div class="project-description">{{ project.description }}</div>
+                                    <div class="project-tech">
+                                        {% for tech in project.tech %}
+                                        <span class="tech-tag">{{ tech }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                                
+                                <!-- Snake Game Project -->
+                                <div class="project-item">
+                                    <div class="project-header">
+                                        <span class="project-name">Terminal Snake Game</span>
+                                        <span class="project-status completed">Completed</span>
+                                    </div>
+                                    <div class="project-description">Classic Snake game implemented in JavaScript with terminal-style graphics</div>
+                                    <div class="project-tech">
+                                        <span class="tech-tag">JavaScript</span>
+                                        <span class="tech-tag">HTML5 Canvas</span>
+                                        <span class="tech-tag">Game Development</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Snake Game Tab -->
+            <div class="tab-content" id="snake-game-tab">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <div class="button close"></div>
+                            <div class="button minimize"></div>
+                            <div class="button maximize"></div>
+                        </div>
+                        <div class="terminal-title">kali@portfolio:~/games/snake</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="game-container">
+                            <div class="game-header">
+                                <div class="game-title">
+                                    <pre>
+┌─────────────────────────────────────────────────────┐
+│                   TERMINAL SNAKE                    │
+├─────────────────────────────────────────────────────┤
+                                    </pre>
+                                </div>
+                                <div class="game-controls">
+                                    <div class="score-board">
+                                        <span class="score-label">SCORE:</span>
+                                        <span id="score">0</span>
+                                    </div>
+                                    <div class="high-score">
+                                        <span class="score-label">HIGH SCORE:</span>
+                                        <span id="highScore">0</span>
+                                    </div>
+                                    <button id="startGame" class="game-btn">START GAME</button>
+                                    <button id="pauseGame" class="game-btn" disabled>PAUSE</button>
+                                    <button id="resetGame" class="game-btn">RESET</button>
+                                </div>
+                            </div>
+                            
+                            <div class="game-area">
+                                <canvas id="gameCanvas" width="600" height="400"></canvas>
+                            </div>
+                            
+                            <div class="game-instructions">
+                                <div class="instructions-section">
+                                    <h4>CONTROLS:</h4>
+                                    <div class="controls-grid">
+                                        <div class="control-item">
+                                            <span class="key">↑</span>
+                                            <span class="action">Move Up</span>
+                                        </div>
+                                        <div class="control-item">
+                                            <span class="key">↓</span>
+                                            <span class="action">Move Down</span>
+                                        </div>
+                                        <div class="control-item">
+                                            <span class="key">←</span>
+                                            <span class="action">Move Left</span>
+                                        </div>
+                                        <div class="control-item">
+                                            <span class="key">→</span>
+                                            <span class="action">Move Right</span>
+                                        </div>
+                                        <div class="control-item">
+                                            <span class="key">P</span>
+                                            <span class="action">Pause Game</span>
+                                        </div>
+                                        <div class="control-item">
+                                            <span class="key">R</span>
+                                            <span class="action">Reset Game</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="instructions-section">
+                                    <h4>GAME RULES:</h4>
+                                    <ul>
+                                        <li>Eat the food (■) to grow and score points</li>
+                                        <li>Avoid hitting walls or yourself</li>
+                                        <li>Each food gives +10 points</li>
+                                        <li>Game speeds up as you grow!</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Tab -->
+            <div class="tab-content" id="about-tab">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <div class="button close"></div>
+                            <div class="button minimize"></div>
+                            <div class="button maximize"></div>
+                        </div>
+                        <div class="terminal-title">kali@portfolio:~/about</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="command-output">
+                            <span class="prompt">kali@portfolio:~$ </span>
+                            <span class="command">cat about.txt</span>
+                            <div class="output">
+                                <pre>
+┌─────────────────────────────────────────────────────┐
+│                    ABOUT ME                         │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  Cybersecurity enthusiast and full-stack developer  │
+│  with passion for ethical hacking and secure        │
+│  software development.                              │
+│                                                     │
+│  Specializing in:                                   │
+│  • Web Application Security                         │
+│  • Network Penetration Testing                      │
+│  • Secure Code Development                          │
+│  • Vulnerability Assessment                         │
+│                                                     │
+│  Always learning and exploring new technologies     │
+│  in the cybersecurity landscape.                    │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Tab -->
+            <div class="tab-content" id="skills-tab">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <div class="button close"></div>
+                            <div class="button minimize"></div>
+                            <div class="button maximize"></div>
+                        </div>
+                        <div class="terminal-title">kali@portfolio:~/skills</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="command-output">
+                            <span class="prompt">kali@portfolio:~$ </span>
+                            <span class="command">skills --list</span>
+                            <div class="output">
+                                <div class="skills-grid">
+                                    <div class="skill-category">
+                                        <h4>Security Tools</h4>
+                                        <ul>
+                                            <li>Metasploit</li>
+                                            <li>Nmap</li>
+                                            <li>Wireshark</li>
+                                            <li>Burp Suite</li>
+                                            <li>John the Ripper</li>
+                                        </ul>
+                                    </div>
+                                    <div class="skill-category">
+                                        <h4>Programming</h4>
+                                        <ul>
+                                            <li>Python</li>
+                                            <li>JavaScript</li>
+                                            <li>Bash Scripting</li>
+                                            <li>SQL</li>
+                                            <li>C++</li>
+                                        </ul>
+                                    </div>
+                                    <div class="skill-category">
+                                        <h4>Web Technologies</h4>
+                                        <ul>
+                                            <li>Flask</li>
+                                            <li>HTML/CSS</li>
+                                            <li>SQLite</li>
+                                            <li>REST APIs</li>
+                                            <li>Web Security</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
